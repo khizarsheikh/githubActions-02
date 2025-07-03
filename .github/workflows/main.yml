@@ -31,6 +31,6 @@ jobs:
           echo Triggering pipeline for testGitHubActions repo,
           curl -X POST \
             -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.REPO_A_PAT }}" \
+            -H "Authorization: Bearer ${{ secrets.PAT }}" \
             https://api.github.com/repos/khizarsheikh/testGitHubActions/actions/workflows/main.yml/dispatches \
             -d '{"ref":"main"}'
