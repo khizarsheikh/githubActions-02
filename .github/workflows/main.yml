@@ -33,14 +33,16 @@ jobs:
       - name: Check if branch exists
         id: check_branch
         run: |
-          BRANCH="${{ github.event.inputs.branch }}"
+          BRANCH="${{ github.event.inputs.branch || github.ref_name }}"
           echo "Checking for branch: $BRANCH"
-          
+          if [ -z "$BRANCH" ]; then
+            echo "❌ No branch provided or detected."
+            exit 1
+          fi
           if git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
             echo "Branch exists"
           else
             echo "❌ Branch '$BRANCH' not found on remote."
-            echo "Cancelling workflow."
             exit 1
           fi
 
