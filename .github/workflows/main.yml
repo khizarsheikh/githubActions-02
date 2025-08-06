@@ -35,54 +35,68 @@ jobs:
             https://api.github.com/repos/khizarsheikh/testGitHubActions/actions/workflows/main.yml/dispatches \
             -d '{"ref":"main"}'
 
-      - name: Get testGitHubActions Workflow Run ID
-        id: get-run
+      - name: Get and Wait for testGitHubActions Workflow Run
+        id: wait-for-run
         run: |
-          sleep 10  # small delay before fetching run
+          # --- Config ---
+          REPO="khizarsheikh/testGitHubActions"
+          BRANCH="main"
+          EVENT="workflow_dispatch"
+          MAX_ATTEMPTS=10
+          DELAY_BEFORE_FETCH=10
+          POLL_INTERVAL=15
+          AUTH_HEADER="Authorization: Bearer ${{ secrets.PAT }}"
+      
+          echo "⏳ Waiting $DELAY_BEFORE_FETCH seconds before checking for workflow run..."
+          sleep $DELAY_BEFORE_FETCH
+      
+          # --- Get Workflow Run ID ---
+          attempt=0
           run_id=""
-          attempts=0
-          while [[ -z "$run_id" && $attempts -lt 10 ]]; do
-            response=$(curl -s -H "Authorization: Bearer ${{ secrets.PAT }}" \
-              https://api.github.com/repos/khizarsheikh/testGitHubActions/actions/runs?branch=main&event=workflow_dispatch)
-
+      
+          while [[ -z "$run_id" && $attempt -lt $MAX_ATTEMPTS ]]; do
+            echo "🔍 Attempt $((attempt+1)) to find workflow run..."
+            response=$(curl -s -H "$AUTH_HEADER" \
+              "https://api.github.com/repos/$REPO/actions/runs?branch=$BRANCH&event=$EVENT")
+      
             run_id=$(echo "$response" | jq -r '.workflow_runs[] | select(.status=="in_progress" or .status=="queued") | .id' | head -n 1)
-
+      
             if [[ -z "$run_id" ]]; then
-              echo "Waiting for workflow run to start..."
+              echo "⌛ Workflow run not found yet. Retrying in 5 seconds..."
               sleep 5
-              ((attempts++))
+              ((attempt++))
             fi
           done
-
+      
           if [[ -z "$run_id" ]]; then
-            echo "❌ Failed to get workflow run ID."
+            echo "❌ Failed to fetch workflow run ID after $MAX_ATTEMPTS attempts."
             exit 1
           fi
-
-          echo "✅ Found run_id: $run_id"
-          echo "run_id=$run_id" >> $GITHUB_OUTPUT
-
-      - name: Wait for testGitHubActions Workflow to Finish
-        run: |
-          run_id=${{ steps.get-run.outputs.run_id }}
-          conclusion=""
-          while [[ "$conclusion" != "success" && "$conclusion" != "failure" && "$conclusion" != "cancelled" ]]; do
-            status_response=$(curl -s -H "Authorization: Bearer ${{ secrets.PAT }}" \
-              https://api.github.com/repos/khizarsheikh/testGitHubActions/actions/runs/$run_id)
-
+      
+          echo "✅ Found workflow run ID: $run_id"
+      
+          # --- Wait for Workflow to Finish ---
+          while :; do
+            status_response=$(curl -s -H "$AUTH_HEADER" \
+              "https://api.github.com/repos/$REPO/actions/runs/$run_id")
+      
             status=$(echo "$status_response" | jq -r '.status')
             conclusion=$(echo "$status_response" | jq -r '.conclusion')
-
-            echo "Workflow status: $status, conclusion: $conclusion"
-
-            if [[ "$status" != "completed" ]]; then
-              sleep 15
+      
+            echo "🔄 Workflow status: $status, conclusion: $conclusion"
+      
+            if [[ "$status" == "completed" ]]; then
+              break
             fi
+      
+            sleep $POLL_INTERVAL
           done
-
+      
+          # --- Final Check ---
           if [[ "$conclusion" != "success" ]]; then
-            echo "❌ Workflow failed with conclusion: $conclusion"
+            echo "❌ Workflow completed with conclusion: $conclusion"
             exit 1
           fi
-
-          echo "✅ testGitHubActions workflow completed successfully."
+      
+          echo "🎉 testGitHubActions workflow completed successfully."
+          echo "run_id=$run_id" >> $GITHUB_OUTPUT
