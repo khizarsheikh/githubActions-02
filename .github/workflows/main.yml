@@ -83,6 +83,6 @@ jobs:
           if [[ "$conclusion" != "success" ]]; then
             echo "❌ Workflow failed with conclusion: $conclusion"
             exit 1
-      #     fi
+          fi
 
-      #     echo "✅ testGitHubActions workflow completed successfully."
+          echo "✅ testGitHubActions workflow completed successfully."
