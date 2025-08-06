@@ -55,3 +55,55 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.PAT }}" \
             https://api.github.com/repos/khizarsheikh/testGitHubActions/actions/workflows/main.yml/dispatches \
             -d '{"ref":"main"}'
+
+      - name: Get testGitHubActions Workflow Run ID
+        id: get-run
+        run: |
+          sleep 10  # small delay before fetching run
+          run_id=""
+          attempts=0
+          while [[ -z "$run_id" && $attempts -lt 10 ]]; do
+            response=$(curl -s -H "Authorization: Bearer ${{ secrets.PAT }}" \
+              https://api.github.com/repos/khizarsheikh/testGitHubActions/actions/runs?branch=main&event=workflow_dispatch)
+
+            run_id=$(echo "$response" | jq -r '.workflow_runs[] | select(.status=="in_progress" or .status=="queued") | .id' | head -n 1)
+
+            if [[ -z "$run_id" ]]; then
+              echo "Waiting for workflow run to start..."
+              sleep 5
+              ((attempts++))
+            fi
+          done
+
+          if [[ -z "$run_id" ]]; then
+            echo "❌ Failed to get workflow run ID."
+            exit 1
+          fi
+
+          echo "✅ Found run_id: $run_id"
+          echo "run_id=$run_id" >> $GITHUB_OUTPUT
+
+      - name: Wait for testGitHubActions Workflow to Finish
+        run: |
+          run_id=${{ steps.get-run.outputs.run_id }}
+          conclusion=""
+          while [[ "$conclusion" != "success" && "$conclusion" != "failure" && "$conclusion" != "cancelled" ]]; do
+            status_response=$(curl -s -H "Authorization: Bearer ${{ secrets.PAT }}" \
+              https://api.github.com/repos/khizarsheikh/testGitHubActions/actions/runs/$run_id)
+
+            status=$(echo "$status_response" | jq -r '.status')
+            conclusion=$(echo "$status_response" | jq -r '.conclusion')
+
+            echo "Workflow status: $status, conclusion: $conclusion"
+
+            if [[ "$status" != "completed" ]]; then
+              sleep 15
+            fi
+          done
+
+          if [[ "$conclusion" != "success" ]]; then
+            echo "❌ Workflow failed with conclusion: $conclusion"
+            exit 1
+          fi
+
+          echo "✅ testGitHubActions workflow completed successfully."
