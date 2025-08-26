@@ -105,6 +105,7 @@ jobs:
         uses: dawidd6/action-download-artifact@v2
         with:
           github_token: ${{ secrets.PAT }}
+          repo: khizarsheikh/testGitHubActions
           workflow: main.yml
           name: report-url
           path: ./artifacts
