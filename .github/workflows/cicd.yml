@@ -114,3 +114,4 @@ jobs:
         run: |
           echo "Report URL:"
           cat ./artifacts/url.txt
+          cat ./artifacts/report.txt
