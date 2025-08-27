@@ -109,7 +109,7 @@ jobs:
           cat ./artifacts/url.txt
           cat ./artifacts/report.txt
         env:
-          GH_TOKEN: ${{ secrets.PAT }}
+          tocken: ${{ secrets.PAT }}
 
       ########################## 2 ##########################
       # - name: Download URL artifact from testGitHubActions
