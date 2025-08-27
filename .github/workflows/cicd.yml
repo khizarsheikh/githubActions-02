@@ -108,8 +108,8 @@ jobs:
           echo "Report URL:"
           cat ./artifacts/url.txt
           cat ./artifacts/report.txt
-        # env:
-        #   GITHUB_TOKEN: ${{ secrets.PAT }}
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
 
       ########################## 2 ##########################
       # - name: Download URL artifact from testGitHubActions
