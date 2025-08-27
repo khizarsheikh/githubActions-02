@@ -101,12 +101,12 @@ jobs:
           fi
       
           echo "🎉 testGitHubActions workflow completed successfully."
-          # echo "run_id=$run_id" >> $GITHUB_OUTPUT
-          run: |
-            gh run download --repo khizarsheikh/testGitHubActions --name report-url --dir ./artifacts
-            echo "Report URL:"
-            cat ./artifacts/url.txt
-            cat ./artifacts/report.txt
+          echo "run_id=$run_id" >> $GITHUB_OUTPUT
+
+          gh run download --repo khizarsheikh/testGitHubActions --name report-url --dir ./artifacts
+          echo "Report URL:"
+          cat ./artifacts/url.txt
+          cat ./artifacts/report.txt
 
       ########################## 1 ##########################
       # - name: Download and Print report URL
