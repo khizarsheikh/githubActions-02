@@ -101,6 +101,7 @@ jobs:
           echo "🎉 testGitHubActions workflow completed successfully."
           echo "run_id=$run_id" >> $GITHUB_OUTPUT
 
+      ########################## 1 ##########################
       - name: Download and Print report URL
         run: |
           gh run download --repo khizarsheikh/testGitHubActions --name report-url --dir ./artifacts
@@ -109,3 +110,19 @@ jobs:
           cat ./artifacts/report.txt
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
+
+      ########################## 2 ##########################
+      # - name: Download URL artifact from testGitHubActions
+      #   uses: dawidd6/action-download-artifact@v2
+      #   with:
+      #     github_token: ${{ secrets.PAT }}
+      #     repo: khizarsheikh/testGitHubActions
+      #     workflow: main.yml
+      #     name: report-url
+      #     path: ./artifacts
+
+      # - name: Print report URL
+      #   run: | 
+      #       echo "Report URL:" 
+      #       cat ./artifacts/url.txt 
+      #       cat ./artifacts/report.txt
