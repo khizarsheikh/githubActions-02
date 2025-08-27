@@ -37,6 +37,8 @@ jobs:
 
       - name: Get and Wait for testGitHubActions Workflow Run
         id: wait-for-run
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
         run: |
           # --- Config ---
           REPO="khizarsheikh/testGitHubActions"
@@ -46,7 +48,6 @@ jobs:
           DELAY_BEFORE_FETCH=10
           POLL_INTERVAL=15
           AUTH_HEADER="Authorization: Bearer ${{ secrets.PAT }}"
-          GITHUB_TOKEN: ${{ secrets.PAT }}
       
           echo "⏳ Waiting $DELAY_BEFORE_FETCH seconds before checking for workflow run..."
           sleep $DELAY_BEFORE_FETCH
