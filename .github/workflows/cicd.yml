@@ -105,8 +105,8 @@ jobs:
 
           gh run download --repo khizarsheikh/testGitHubActions --name report-url --dir ./artifacts
           echo "Report URL:"
-          cat ./artifacts/url.txt
-          cat ./artifacts/report.txt
+          cat ./artifacts/urls.txt
+          # cat ./artifacts/report.txt
 
       ########################## 1 ##########################
       # - name: Download and Print report URL
