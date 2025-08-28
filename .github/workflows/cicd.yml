@@ -105,6 +105,9 @@ jobs:
 
           gh run download --repo khizarsheikh/testGitHubActions --name report-url --dir ./artifacts
           echo "Report URL:"
+          if [[ -z ./artifacts/urls.txt ]]; then
+            echo "No report generated"
+          fi else 
           cat ./artifacts/urls.txt
           # cat ./artifacts/report.txt
 
