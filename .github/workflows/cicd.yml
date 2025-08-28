@@ -104,11 +104,14 @@ jobs:
           echo "run_id=$run_id" >> $GITHUB_OUTPUT
 
           gh run download --repo khizarsheikh/testGitHubActions --name report-url --dir ./artifacts
+          
           echo "Report URL:"
-          if [[ -z ./artifacts/urls.txt ]]; then
+          if [[ -f ./artifacts/urls.txt ]]; then
+            cat ./artifacts/urls.txt
+          else
             echo "No report generated"
-          fi else 
-          cat ./artifacts/urls.txt
+          fi
+            
           # cat ./artifacts/report.txt
 
       ########################## 1 ##########################
