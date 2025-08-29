@@ -112,12 +112,16 @@ jobs:
           ls -alh ./artifacts
           echo "Report URL:"
           if [[ -f ./artifacts/url.txt ]]; then
+            echo "Printing ......."
             cat ./artifacts/url.txt
           else
+            echo "Deleting ......"
+            rm -f ./artifacts/url.txt
             echo "No report generated"
           fi
 
           echo "Cleaning ./artifacts"
+          if [[  ]]
           rm -rf ./artifacts/*
           echo "Listing ./artifacts directory..."
           pwd
