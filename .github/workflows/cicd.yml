@@ -103,9 +103,13 @@ jobs:
           echo "🎉 testGitHubActions workflow completed successfully."
           echo "run_id=$run_id" >> $GITHUB_OUTPUT
 
-          rm -f ./artifacts/url.txt
-          gh run download --repo khizarsheikh/testGitHubActions --name report-url --dir ./artifacts
+          echo "Listing ./artifacts directory..."
+          ls -alh ./artifacts
           
+          gh run download --repo khizarsheikh/testGitHubActions --name report-url --dir ./artifacts
+
+          echo "Listing ./artifacts directory..."
+          ls -alh ./artifacts
           echo "Report URL:"
           if [[ -f ./artifacts/url.txt ]]; then
             cat ./artifacts/url.txt
