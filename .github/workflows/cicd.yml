@@ -120,6 +120,7 @@ jobs:
           echo "Cleaning ./artifacts"
           rm -rf ./artifacts/*
           echo "Listing ./artifacts directory..."
+          pwd
           ls -alh ./artifacts
 
             
